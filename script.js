@@ -16,14 +16,22 @@ function random(min,max) {
 
 //creating the ball
 
-function Ball(x, y, velX, velY, color, size) {
+function Shape(x, y, velX, velY, exists) {
     this.x = x;
     this.y = y;
     this.velX = velX;
     this.velY = velY;
+    this.exists = exists;  
+  }
+
+  function Ball (x, y, velX, velY, exists, color, size) {
+    Shape.call(this, x, y, velX, velY, exists);
     this.color = color;
     this.size = size;
   }
+
+  Ball.prototype = Object.create(Shape.prototype);
+  Ball.prototype.constructor = Ball;
 
   //draw function
 
@@ -91,6 +99,7 @@ function Ball(x, y, velX, velY, color, size) {
         random(0 + size,height - size),
         random(-7,7),
         random(-7,7),
+        exists = true,
         'rgb(' + random(0,255) + ',' + random(0,255) + ',' + random(0,255) +')',
         size
       );
