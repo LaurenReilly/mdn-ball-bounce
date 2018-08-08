@@ -1,3 +1,7 @@
+//variables for ball count
+
+var para = document.querySelector('p');
+var count = 0;
 
 // setup canvas
 
@@ -112,6 +116,8 @@ function Shape(x, y, velX, velY, exists) {
     
           if (distance < this.size + balls[j].size) {
             balls[j].exists = false;
+            count--;
+            para.textContent = "Ball Count: " + count;
         }
       }
     }
@@ -156,6 +162,7 @@ function Shape(x, y, velX, velY, exists) {
     }
   }
 
+
 // array to store the balls
   var balls = [];
 
@@ -184,6 +191,8 @@ evilCircle.setControls();
         size
       );
       balls.push(ball);
+      count++;
+      para.textContent = "Ball Count: " + count;
     }
   
     for (var i = 0; i < balls.length; i++) {
@@ -202,3 +211,10 @@ evilCircle.setControls();
   }
 
   loop();
+
+
+  /*things that confused me: this.color and this.size in the EvilCircle constructor. I 
+  didn't understand that at all and so I had just defined them as color: white and
+  size: 10. Need to figure out what this really is! Understanding what properties and
+  what the parameters are on objects. Not clear on that but I have a better understanding
+  now. Read up on the inheritance and prototype stuff! */
