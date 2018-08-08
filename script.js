@@ -24,6 +24,8 @@ function Shape(x, y, velX, velY, exists) {
     this.exists = exists;  
   }
 
+  //creating the balls
+
   function Ball (x, y, velX, velY, exists, color, size) {
     Shape.call(this, x, y, velX, velY, exists);
     this.color = color;
@@ -33,13 +35,86 @@ function Shape(x, y, velX, velY, exists) {
   Ball.prototype = Object.create(Shape.prototype);
   Ball.prototype.constructor = Ball;
 
-  //draw function
+  //creating the evil circle
+
+  function EvilCircle(x, y, exists) {
+    Shape.call(this, x, y, 20, 20, exists);
+    this.color = "white";
+    this.size = 10;
+  }
+
+  EvilCircle.prototype = Object.create(Shape.prototype);
+  EvilCircle.prototype.constructor = EvilCircle;
+
+  //draw functions
 
   Ball.prototype.draw = function() {
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
     ctx.fill();
+  }
+
+  EvilCircle.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 3;
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.stroke();
+
+  }
+
+  //EvilCircles function to keep it on screen
+
+  EvilCircle.prototype.checkBounds = function(){
+    if ((this.x + this.size) >= width) {
+      this.x -= this.x;
+    }
+  
+    if ((this.x - this.size) <= 0) {
+      this.x += this.x;
+    }
+  
+    if ((this.y + this.size) >= height) {
+      this.y -= this.y;
+    }
+  
+    if ((this.y - this.size) <= 0) {
+      this.y += this.y;
+    }
+  }
+
+  //EvilCircle movement
+
+  EvilCircle.prototype.setControls = function() {
+      var _this = this;
+      window.onkeydown = function(e) {
+      if (e.keyCode === 65) {
+        _this.x -= _this.velX;
+      } else if (e.keyCode === 68) {
+        _this.x += _this.velX;
+      } else if (e.keyCode === 87) {
+        _this.y -= _this.velY;
+      } else if (e.keyCode === 83) {
+        _this.y += _this.velY;
+      }
+    }
+  }
+
+  //EvilCircle Collision Detection
+
+  EvilCircle.prototype.collisionDetect = function() {
+      for (var j = 0; j < balls.length; j++) {
+        if (balls[j].exists) {
+          var dx = this.x - balls[j].x;
+          var dy = this.y - balls[j].y;
+          var distance = Math.sqrt(dx * dx + dy * dy);
+    
+          if (distance < this.size + balls[j].size) {
+            balls[j].exists = false;
+        }
+      }
+    }
   }
 
   //update function
@@ -84,12 +159,17 @@ function Shape(x, y, velX, velY, exists) {
 // array to store the balls
   var balls = [];
 
+
+//creating the evil circle on screen
+
+var evilCircle = new EvilCircle(random(0, width), random(0, height), true);
+evilCircle.setControls();
+
 // animation loop
 
   function loop() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.fillRect(0, 0, width, height);
-  
     while (balls.length < 25) {
       var size = random(10,20);
       var ball = new Ball(
@@ -107,11 +187,17 @@ function Shape(x, y, velX, velY, exists) {
     }
   
     for (var i = 0; i < balls.length; i++) {
-      balls[i].draw();
-      balls[i].update()
-      balls[i].collisionDetect();
+      if (balls[i].exists) {
+        balls[i].draw();
+        balls[i].update()
+        balls[i].collisionDetect();
+      }
     }
-  
+
+    evilCircle.draw();
+    evilCircle.checkBounds();
+    evilCircle.collisionDetect();
+
     requestAnimationFrame(loop);
   }
 
